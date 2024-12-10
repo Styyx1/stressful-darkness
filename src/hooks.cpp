@@ -18,7 +18,7 @@ namespace Hooks
         if(frameCount > Settings::frame_count) {            
             frameCount = 0;
             auto a_cell = player->GetParentCell();
-            if (a_cell && Utility::IsDungeon(a_cell) && player->GetHighProcess()->lightLevel < Settings::light_level_limit) {
+            if (a_cell && Utility::IsDungeon(a_cell) && player->GetHighProcess()->lightLevel < Settings::light_level_limit && !Utility::IsSuperNatural(player)) {
                 lightLevelCount++;
                 logs::debug("counting light level ticks, it is: {}", lightLevelCount);
                 if (lightLevelCount >= Settings::light_threshold) {
@@ -34,7 +34,7 @@ namespace Hooks
         //runs every 30 frames by default and only when in an interior defined as dungeon
         if(frameCount == Settings::frame_count / 2.0f || frameCount == Settings::frame_count) {
             auto a_cell = player->GetParentCell();
-            if (a_cell && Utility::IsDungeon(a_cell) && !Utility::IsBeastForm()) {
+            if (a_cell && Utility::IsDungeon(a_cell) && !Utility::IsBeastForm() && !Utility::IsSuperNatural(player)) {
                 ChangeImod(player);
             }
         }
@@ -51,7 +51,7 @@ namespace Hooks
 
     void MainUpdate::AddStress(RE::TESGlobal* a_stress)
     {
-        a_stress->value += Settings::increase_amount;
+        a_stress->value += Utility::StressGain();
         RE::DebugNotification(Settings::stress_message.c_str(), nullptr, true);
         if (a_stress->value > 100) {
             a_stress->value = 100;

@@ -10,6 +10,8 @@ public:
 	inline static std::string stress_message;
 	inline static float light_level_limit;
 	inline static bool allow_darkness_change;
+	inline static bool do_not_affect_supernatural;
+	inline static bool sneak_level_enable;
 
 	//forms
 	inline static RE::TESGlobal* stress_global;

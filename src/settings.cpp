@@ -13,6 +13,8 @@ void Settings::LoadSettings() noexcept
 	light_threshold = (std::int32_t)ini.GetDoubleValue("General", "iLightTickCount", 60);
 	light_level_limit = (float)ini.GetDoubleValue("General", "fLightLevelThreshold", 80.0f);
 	allow_darkness_change = ini.GetBoolValue("General", "bAllowDarknessChange", true);
+	do_not_affect_supernatural = ini.GetBoolValue("General", "bNoVampWere", false);
+	sneak_level_enable = ini.GetBoolValue("General", "bEnableSneakLevels", false);
 
 	logs::info("...settings loaded");
 }
