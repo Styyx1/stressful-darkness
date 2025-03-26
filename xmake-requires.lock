@@ -43,13 +43,13 @@
             },
             version = "v4.22"
         },
-        ["spdlog#c9428c73"] = {
+        ["spdlog#9c36f0a9"] = {
             repo = {
                 branch = "master",
-                commit = "24602239899282ff44b38cc45c66c66b4bb5d763",
+                commit = "d557ccb28de6284dff4e7a174e1681f5b386c2d5",
                 url = "https://gitlab.com/tboox/xmake-repo.git"
             },
-            version = "v1.15.0"
+            version = "v1.15.1"
         }
     }
 }

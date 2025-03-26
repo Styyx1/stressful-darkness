@@ -4,8 +4,7 @@
 void InitListener(SKSE::MessagingInterface::Message* a_msg) 
 {
 	if (a_msg->type == SKSE::MessagingInterface::kDataLoaded) {
-		Settings::LoadSettings();
-		Settings::LoadForms();
+		Options::Forms::LoadForms();
 		Hooks::InstallHooks();
 	}
 }
@@ -13,6 +12,7 @@ void InitListener(SKSE::MessagingInterface::Message* a_msg)
 SKSEPluginLoad(const SKSE::LoadInterface* a_skse)
 {
 	SKSE::Init(a_skse);
+	Options::Values::Update();
 	SKSE::GetMessagingInterface()->RegisterListener(InitListener);
 	return true;
 }
