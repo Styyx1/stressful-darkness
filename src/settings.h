@@ -57,8 +57,8 @@ namespace Options
 			}
 			else
 			{
-				logs::debug("loaded {} with a value of {}", stress_global->GetFormEditorID(), stress_global->value);
-				logs::debug("loaded {} with a value of {}", stress_enabled_global->GetFormEditorID(), stress_enabled_global->value);
+				logs::info("loaded {} with a value of {}", stress_global->GetFormEditorID(), stress_global->value);
+				logs::info("loaded {} with a value of {}", stress_enabled_global->GetFormEditorID(), stress_enabled_global->value);
 			}
 
 			logs::info("...loaded forms");

@@ -17,8 +17,13 @@ namespace Hooks
 
         auto a_cell = player->GetParentCell();
 
-        if (a_cell && Utility::IsDungeon(a_cell))
+        if (a_cell && Utility::IsDungeon(a_cell) && isInside(player))
         {
+            if (!inside)
+            {
+                inside = true;
+            }
+
             if (frameCount > 10)
             {
                 frameCount = 0;
@@ -43,7 +48,15 @@ namespace Hooks
                 myTimer.Reset();
             }
         }
-
+        else
+        {
+            if (inside)
+            {
+                inside = false;
+                RE::ImageSpaceModifierInstanceForm::Stop(Options::Forms::imod);
+                myTimer.Reset();
+            }
+        }
         frameCount++;
 
         v_func(player, a_delta);
@@ -78,6 +91,21 @@ namespace Hooks
             RE::ImageSpaceModifierInstanceForm::Trigger(Options::Forms::imod, str_imod, player->As<RE::NiAVObject>());
         }
         return;
+    }
+    bool MainUpdate::isInside(RE::PlayerCharacter *player)
+    {
+        bool isInside = false;
+        auto a_cell = player->GetParentCell();
+        if (a_cell && a_cell->IsInteriorCell())
+        {
+            isInside = true;
+        }
+        else
+        {
+            isInside = false;
+        }
+
+        return isInside;
     }
     void Timer::Start()
     {

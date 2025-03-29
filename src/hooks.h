@@ -4,6 +4,7 @@ namespace Hooks
 {
     void InstallHooks();
 
+    static bool inside = true;
     class MainUpdate
     {
     public:
@@ -14,6 +15,7 @@ namespace Hooks
         static inline std::int32_t lightLevelCount;
         static void AddStress(RE::TESGlobal *a_stress);
         static void ChangeImod(RE::PlayerCharacter *player);
+        static bool isInside(RE::PlayerCharacter *player);
 
     private:
         inline static REL::Relocation<decltype(&PlayerUpdate)> v_func;
@@ -33,7 +35,7 @@ namespace Hooks
         bool IsRunning() const;
 
     private:
-        std::chrono::steady_clock::time_point startTime {};
+        std::chrono::steady_clock::time_point startTime{};
         bool running{false};
     };
 }
