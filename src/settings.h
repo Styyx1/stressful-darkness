@@ -1,87 +1,54 @@
 #pragma once
+#include "mod-data.h"
 
 namespace Options
 {
+	using namespace MOD;
 
-	namespace Values
+	struct Settings : public REX::Singleton<Settings>
 	{
-		static REX::INI::F32 increase_amount{"General", "fStressIncrease", 15.0f};
-		static REX::INI::F32 light_level_limit{"General", "fLightLevelThreshold", 80.0f};
-		static REX::INI::Bool allow_darkness_change{"General", "bAllowDarknessChange", true};
-		static REX::INI::Bool do_not_affect_supernatural{"General", "bNoVampWere", false};
-		static REX::INI::Bool sneak_level_enable{"General", "bEnableSneakLevels", false};
+		inline static REX::TOML::F32 increase_amount{ SETTINGS_SECTION, "fStressIncrease", 15.0f };
+		inline static REX::TOML::F32 light_level_limit{ SETTINGS_SECTION, "fLightLevelThreshold", 80.0f };
+		inline static REX::TOML::F32 stress_increase_seconds{ SETTINGS_SECTION, "fSecondsTillStress", 30.0f };
 
-		static REX::INI::F32 stress_increase_seconds{"General", "fSecondsTillStress", 30.0f};
+		inline static REX::TOML::Bool allow_darkness_change{ TOGGLES_SECTION, "bAllowDarknessChange", true };
+		inline static REX::TOML::Bool do_not_affect_supernatural{ TOGGLES_SECTION, "bNoVampWere", false };
+		inline static REX::TOML::Bool sneak_level_enable{ TOGGLES_SECTION, "bEnableSneakLevels", false };
+		inline static REX::TOML::Bool night_eye_no_stress{ TOGGLES_SECTION, "bNightEyeNoStress", false };
 
-		static REX::INI::Str stress_message{"General", "sStressMessage", (std::string)"The darkness here is overwhelming..."};
+		inline static REX::TOML::Str stress_message{ TEXT_SECTION, "sStressMessage", (std::string)"The darkness here is overwhelming..." };
 
-		static void Update()
+		void Update()
 		{
-			logs::info("***************SETTINGS***************");
-			logs::info("loading settings...");
-			const auto ini = REX::INI::SettingStore::GetSingleton();
-			ini->Init(R"(.\Data\SKSE\Plugins\stressful-darkness.ini)", R"(.\Data\SKSE\Plugins\stressful-darkness.ini)");
-			ini->Load();
+			REX::INFO("loading settings...");
+			const auto toml = REX::TOML::SettingStore::GetSingleton();
+			toml->Init(TOML_PATH_DEFAULT.data(), TOML_PATH_CUSTOM.data());
+			toml->Load();
 
 			//set min and max value for stress increase timer
-			stress_increase_seconds.SetValue( std::clamp(stress_increase_seconds.GetValue(), 0.0f, 240.0f));
+			stress_increase_seconds.SetValue(std::clamp(stress_increase_seconds.GetValue(), 0.0f, 240.0f));
 
 		}
-	}
-	struct Forms
-	{
+	};
+	struct Forms : public REX::Singleton<Forms>
+	{		
 		// forms
 		inline static RE::TESGlobal *stress_global{nullptr};
 		inline static RE::TESGlobal *stress_enabled_global{nullptr};
 		inline static RE::TESImageSpaceModifier *imod{nullptr};
-		inline static void LoadForms()
+
+		void LoadForms()
 		{
-			logs::info("***************FORMS***************");
-			logs::info("loading forms...");
-
-			const int stress_global_form = 0x801;
-			const int stress_enabled_form = 0x8a5;
-			const char *mod_name = "Stress and Fear.esp";
-			const int imod_form = 0x1AA31;
-			const char *imod_name = "Dawnguard.esm";
 			const auto dh = RE::TESDataHandler::GetSingleton();
+			imod = dh->LookupForm<RE::TESImageSpaceModifier>(IMOD_FORM_ID, IMOD_MOD_NAME);
 
-			imod = dh->LookupForm<RE::TESImageSpaceModifier>(imod_form, imod_name);
+			stress_global = dh->LookupForm<RE::TESGlobal>(STRESS_GLOBAL_FORM_ID, STRESS_MOD_NAME);
+			stress_enabled_global = dh->LookupForm<RE::TESGlobal>(STRESS_ENABLED_FORM_ID, STRESS_MOD_NAME);
 
-			stress_global = dh->LookupForm<RE::TESGlobal>(stress_global_form, mod_name);
-			stress_enabled_global = dh->LookupForm<RE::TESGlobal>(stress_enabled_form, mod_name);
-
-			if (stress_global == nullptr || stress_enabled_global == nullptr)
+			if (!stress_global || !stress_enabled_global || !stress_global->Is(RE::FormType::Global) || !stress_enabled_global->Is(RE::FormType::Global))
 			{
-				SKSE::stl::report_and_fail("Stress and Fear is not enabled/loaded, please enable it this mod will not work without it");
+				REX::FAIL("Stress and Fear is not enabled/loaded, please enable it this mod will not work without it");
 			}
-			else
-			{
-				logs::info("loaded {} with a value of {}", stress_global->GetFormEditorID(), stress_global->value);
-				logs::info("loaded {} with a value of {}", stress_enabled_global->GetFormEditorID(), stress_enabled_global->value);
-			}
-
-			logs::info("...loaded forms");
 		}
 	};
 }
-
-// unused for now, but i will leave it here in case i want to revisit the idea of it at some point
-// inline static std::unordered_map<RE::TESObjectLIGH *, RE::Color> lightStorage;
-
-/*
-Potential Imod Forms:
-
-* Dawnguard.esm
-* 0x1AA31 -- perfect
-
-
-* Skyrim.esm not tested cause not needed for now. I keep it here just in case i wanna try stuff again
-* 0xE3032
-* 0xF756E
-* 0xFD7DB -- berserk effect
-* 0x10C445 -- low health
-* Dragonborn.esm
-* 0x317D8
-*
-*/

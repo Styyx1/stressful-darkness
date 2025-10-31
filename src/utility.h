@@ -39,17 +39,17 @@ namespace Utility
 	{
 		bool is_monster = IsBeastForm() || player->GetRace()->HasKeywordString("ActorTypeUndead") || player->HasKeywordString("ActorTypeUndead");
 
-		return Options::Values::do_not_affect_supernatural.GetValue() && is_monster;
+		return Options::Settings::do_not_affect_supernatural.GetValue() && is_monster;
 	}
 
 	inline static float StressGain()
 	{
-		float result = Options::Values::increase_amount.GetValue();
+		float result = Options::Settings::increase_amount.GetValue();
 
-		if (Options::Values::sneak_level_enable.GetValue())
+		if (Options::Settings::sneak_level_enable.GetValue())
 		{
 			RE::PlayerCharacter *player = RE::PlayerCharacter::GetSingleton();
-			auto sneak_level = player->AsActorValueOwner()->GetActorValue(RE::ActorValue::kSneak);
+			auto sneak_level = player->GetActorValue(RE::ActorValue::kSneak);
 			if (sneak_level > 30)
 			{
 				float modifier = 1 - sneak_level / 100;

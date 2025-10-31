@@ -4,84 +4,63 @@
 
 namespace Hooks
 {
-    void InstallHooks()
-    {
-        logs::info("***************HOOKS***************");
-        MainUpdate::InstallUpdate();
-    }
-
     Timer myTimer;
 
     void MainUpdate::PlayerUpdate(RE::PlayerCharacter *player, float a_delta)
     {
+        auto cell = ActorUtil::GetPlayerCell(player);
 
-        auto a_cell = player->GetParentCell();
+        bool in_dungeon = cell && CellUtil::IsDungeon(cell) && isInside(player);
 
-        if (a_cell && Utility::IsDungeon(a_cell) && isInside(player))
-        {
-            if (!inside)
-            {
-                inside = true;
-            }
-
-            if (frameCount > 10)
-            {
-                frameCount = 0;
-                ChangeImod(player);
-            }
-            if (player->GetHighProcess()->lightLevel < Options::Values::light_level_limit.GetValue() && !Utility::IsSuperNatural(player))
-            {
-
-                if (!myTimer.IsRunning())
-                {
-                    myTimer.Start();
-                }
-
-                if (myTimer.ElapsedSeconds() >= Options::Values::stress_increase_seconds.GetValue())
-                {
-                    AddStress(Options::Forms::stress_global);
-                    myTimer.Reset(); // Reset or Stop if needed
-                }
-            }
-            else
-            {
-                myTimer.Reset();
-            }
-        }
-        else
-        {
-            if (inside)
-            {
+        if (!in_dungeon) {
+            if (inside) {
                 inside = false;
                 RE::ImageSpaceModifierInstanceForm::Stop(Options::Forms::imod);
                 myTimer.Reset();
             }
+            frameCount++;
+            _Hook0(player, a_delta);
+            return;
         }
-        frameCount++;
 
-        v_func(player, a_delta);
-    }
+        if (!inside) {
+            inside = true;
+        }
 
-    void MainUpdate::InstallUpdate()
-    {
-        REL::Relocation<std::uintptr_t> PlayerVTBL{RE::VTABLE_PlayerCharacter[0]};
-        v_func = PlayerVTBL.write_vfunc(0xAD, PlayerUpdate);
-        logs::info("Hook:Player Update");
+        if (++frameCount > 10) {
+            frameCount = 0;
+            ChangeImod(player);
+        }        
+
+        if (ShouldIncreaseStress(player)) {
+            if (!myTimer.IsRunning())
+                myTimer.Start();
+
+            if (myTimer.ElapsedSeconds() >= Options::Settings::stress_increase_seconds.GetValue()) {
+                AddStress(Options::Forms::stress_global);
+                myTimer.Reset();
+            }
+        }
+        else {
+            myTimer.Reset();
+        }
+
+        _Hook0(player, a_delta);
     }
 
     void MainUpdate::AddStress(RE::TESGlobal *a_stress)
     {
+        if(!CanAddStress())
+			return;
         a_stress->value += Utility::StressGain();
-        RE::DebugNotification(Options::Values::stress_message.GetValue().c_str(), nullptr, true);
-        if (a_stress->value > 100)
-        {
-            a_stress->value = 100;
-        }
+        RE::DebugNotification(Options::Settings::stress_message.GetValue().c_str(), nullptr, true);
+        if (GetCurrentStress() > 100.f)
+            a_stress->value = 100.f;        
     }
 
     void MainUpdate::ChangeImod(RE::PlayerCharacter *player)
     {
-        if (Options::Forms::imod != nullptr && Options::Values::allow_darkness_change.GetValue())
+        if (Options::Forms::imod != nullptr && Options::Settings::allow_darkness_change.GetValue())
         {
             float max_range = 0.98;
             float min_range = 0.0;
@@ -95,17 +74,33 @@ namespace Hooks
     bool MainUpdate::isInside(RE::PlayerCharacter *player)
     {
         bool isInside = false;
-        auto a_cell = player->GetParentCell();
-        if (a_cell && a_cell->IsInteriorCell())
-        {
+        auto cell = ActorUtil::GetPlayerCell(player);        
+        if (cell && cell->IsInteriorCell()) {
             isInside = true;
         }
-        else
-        {
+        else {
             isInside = false;
         }
-
         return isInside;
+    }
+    bool MainUpdate::CanAddStress()
+    {
+        return Options::Forms::stress_enabled_global->value != 0;
+    }
+    float MainUpdate::GetCurrentStress()
+    {
+        return Options::Forms::stress_global->value;
+    }
+    bool MainUpdate::ShouldIncreaseStress(RE::PlayerCharacter* player)
+    {
+        auto process = player->GetHighProcess();
+        bool is_dark_here = process && process->lightLevel < Options::Settings::light_level_limit.GetValue();
+        bool is_not_monster = !Utility::IsSuperNatural(player);
+        bool has_night_eye_effect = ActorUtil::ActorHasEffectOfTypeActive(player, RE::EffectArchetypes::ArchetypeID::kNightEye);
+        bool night_eye_protects = Options::Settings::night_eye_no_stress.GetValue();
+
+        bool should_increase_stress = is_dark_here && is_not_monster && (!night_eye_protects || !has_night_eye_effect);
+        return should_increase_stress;
     }
     void Timer::Start()
     {
@@ -126,7 +121,7 @@ namespace Hooks
         running = false;
     }
 
-    double Timer::ElapsedSeconds()
+    double Timer::ElapsedSeconds() const
     {
         if (!running)
             return 0.0; // If stopped, return 0

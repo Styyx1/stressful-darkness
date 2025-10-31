@@ -1,10 +1,11 @@
 #pragma once
 
-#define NOMINMAX
-
+#define COMMONLIB_OPTION_TOML
 #include <RE/Skyrim.h>
 #include <SKSE/SKSE.h>
-#include <REX/REX/INI.h>
+#include <REX/REX/TOML.h>
 
-namespace logs = SKSE::log;
-using namespace std::literals;
+#include <styyx-utils.h>
+
+using namespace StyyxUtil;
+using namespace RE;

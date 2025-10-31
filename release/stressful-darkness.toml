@@ -1,0 +1,13 @@
+
+[Settings]
+fStressIncrease = 15.0
+fLightLevelThreshold = 80.0
+fSecondsTillStress = 30.0
+
+[Toggles]
+bAllowDarknessChange = true
+bNoVampWere = false
+bEnableSneakLevels = false
+
+[Text]
+sStressMessage = "The darkness here is overwhelming..."
