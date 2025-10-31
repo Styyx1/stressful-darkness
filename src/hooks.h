@@ -17,7 +17,7 @@ namespace Hooks
 
 
     private:
-		inline static REL::HookVFT _Hook0{VTABLE_PlayerCharacter[0], 0xAD, PlayerUpdate};
+		inline static REL::HookVFT _Hook0{RE::VTABLE_PlayerCharacter[0], 0xAD, PlayerUpdate};
     };
 
     class Timer

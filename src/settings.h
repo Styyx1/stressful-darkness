@@ -14,17 +14,18 @@ namespace Options
 		inline static REX::TOML::Bool allow_darkness_change{ TOGGLES_SECTION, "bAllowDarknessChange", true };
 		inline static REX::TOML::Bool do_not_affect_supernatural{ TOGGLES_SECTION, "bNoVampWere", false };
 		inline static REX::TOML::Bool sneak_level_enable{ TOGGLES_SECTION, "bEnableSneakLevels", false };
-		inline static REX::TOML::Bool night_eye_no_stress{ TOGGLES_SECTION, "bNightEyeNoStress", false };
+		inline static REX::TOML::Bool night_eye_no_stress{ TOGGLES_SECTION, "bEnableNightEyeImmunity", false };
 
 		inline static REX::TOML::Str stress_message{ TEXT_SECTION, "sStressMessage", (std::string)"The darkness here is overwhelming..." };
 
-		void Update()
+		void Update(bool doSave = false)
 		{
-			REX::INFO("loading settings...");
 			const auto toml = REX::TOML::SettingStore::GetSingleton();
 			toml->Init(TOML_PATH_DEFAULT.data(), TOML_PATH_CUSTOM.data());
-			toml->Load();
-
+			if (!doSave)
+				toml->Load();
+			else 
+				toml->Save();	
 			//set min and max value for stress increase timer
 			stress_increase_seconds.SetValue(std::clamp(stress_increase_seconds.GetValue(), 0.0f, 240.0f));
 

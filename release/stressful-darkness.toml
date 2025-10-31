@@ -8,6 +8,7 @@ fSecondsTillStress = 30.0
 bAllowDarknessChange = true
 bNoVampWere = false
 bEnableSneakLevels = false
+bEnableNightEyeImmunity = true
 
 [Text]
 sStressMessage = "The darkness here is overwhelming..."

@@ -1,5 +1,6 @@
 #include "hooks.h"
 #include "settings.h"
+#include "ui.h"
 
 void InitListener(SKSE::MessagingInterface::Message* a_msg) 
 {
@@ -13,5 +14,6 @@ SKSEPluginLoad(const SKSE::LoadInterface* a_skse)
 	SKSE::Init(a_skse);
 	Options::Settings::GetSingleton()->Update();
 	SKSE::GetMessagingInterface()->RegisterListener(InitListener);
+	UI::Register();
 	return true;
 }

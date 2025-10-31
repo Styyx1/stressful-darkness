@@ -8,4 +8,3 @@
 #include <styyx-utils.h>
 
 using namespace StyyxUtil;
-using namespace RE;
