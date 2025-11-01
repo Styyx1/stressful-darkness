@@ -20,6 +20,16 @@ namespace Hooks
 		inline static REL::HookVFT _Hook0{RE::VTABLE_PlayerCharacter[0], 0xAD, PlayerUpdate};
     };
 
+    struct HideNPCsInDark
+    {
+    private:
+        static void ActorUpdate(RE::Character* a_actor, float a_delta);
+        static inline REL::HookVFT _Hook1{ RE::VTABLE_Character[0], 0xAD, &ActorUpdate };
+
+
+    };
+
+
     class Timer
     {
     public:

@@ -10,11 +10,17 @@ namespace Options
 		inline static REX::TOML::F32 increase_amount{ SETTINGS_SECTION, "fStressIncrease", 15.0f };
 		inline static REX::TOML::F32 light_level_limit{ SETTINGS_SECTION, "fLightLevelThreshold", 80.0f };
 		inline static REX::TOML::F32 stress_increase_seconds{ SETTINGS_SECTION, "fSecondsTillStress", 30.0f };
+		inline static REX::TOML::I32 npc_hide_threshold{ SETTINGS_SECTION, "iNPCHideThreshold", 50 };
+		inline static REX::TOML::F64 npc_hide_light_level_threshold{ SETTINGS_SECTION, "fNPCHideLightLevelThreshold", 30.0 };
+		inline static REX::TOML::F32 npc_hide_distance_full_fade{ SETTINGS_SECTION, "fNPCHideDistanceFullFade", 2400.0f };
+		inline static REX::TOML::F32 npc_hide_distance_no_fade{ SETTINGS_SECTION, "fNPCHideDistanceNoFade", 1200.0f };
+
 
 		inline static REX::TOML::Bool allow_darkness_change{ TOGGLES_SECTION, "bAllowDarknessChange", true };
 		inline static REX::TOML::Bool do_not_affect_supernatural{ TOGGLES_SECTION, "bNoVampWere", false };
 		inline static REX::TOML::Bool sneak_level_enable{ TOGGLES_SECTION, "bEnableSneakLevels", false };
 		inline static REX::TOML::Bool night_eye_no_stress{ TOGGLES_SECTION, "bEnableNightEyeImmunity", false };
+		inline static REX::TOML::Bool hide_npcs_in_dark{ TOGGLES_SECTION, "bHideNPCsInDark", true };
 
 		inline static REX::TOML::Str stress_message{ TEXT_SECTION, "sStressMessage", (std::string)"The darkness here is overwhelming..." };
 
