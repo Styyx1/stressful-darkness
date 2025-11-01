@@ -96,7 +96,7 @@ namespace Hooks
         auto process = player->GetHighProcess();
         bool is_dark_here = process && process->lightLevel < Options::Settings::light_level_limit.GetValue();
         bool is_not_monster = !Utility::IsSuperNatural(player);
-        bool has_night_eye_effect = ActorUtil::ActorHasEffectOfTypeActive(player, RE::EffectArchetypes::ArchetypeID::kNightEye);
+        bool has_night_eye_effect = ActorUtil::HasEffectWithKeywordActive(player, "MagicNightEye");
         bool night_eye_protects = Options::Settings::night_eye_no_stress.GetValue();
         bool should_increase_stress = is_dark_here && is_not_monster && (!night_eye_protects || !has_night_eye_effect);
 
